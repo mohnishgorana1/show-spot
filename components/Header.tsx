@@ -30,12 +30,12 @@ function Header() {
             <span className="hover:text-gray-400 hover:underline cursor-pointer">Events</span>
           </Link>
           <Link href="/auth/login" passHref>
-            <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded ring-1 hover:ring-blue-300">
+            <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded ">
               Login
             </span>
           </Link>
           <Link href="/auth/register" passHref>
-            <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded ring-1 hover:ring-blue-300">
+            <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded ">
               Register
             </span>
           </Link>
@@ -46,9 +46,9 @@ function Header() {
           <Menubar>
             <MenubarMenu>
               <MenubarTrigger>
-                <MenuIcon />
+                <MenuIcon className="size-5"/>
               </MenubarTrigger>
-              <MenubarContent className="flex flex-col items-center">
+              <MenubarContent className="mr-5 flex flex-col items-center bg-white text-slate-900 font-semibold">
                 <MenubarItem>
                   <Link href="/" passHref>
                     <span className="hover:text-gray-400 cursor-pointer">

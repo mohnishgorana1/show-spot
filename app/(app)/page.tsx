@@ -2,7 +2,7 @@ import React from 'react'
 
 function Home() {
   return (
-    <div>Home</div>
+    <main className='px-2 md:px-4'>Home</main>
   )
 }
 
