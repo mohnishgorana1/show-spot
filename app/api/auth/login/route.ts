@@ -47,15 +47,18 @@ export async function POST(req: Request) {
     //   expiresIn: JWT_EXPIRATION,
     // });
 
-
     console.log("Got user and passsword correct");
-    
+
     // Generate JWT token using jose
-    const token = await new SignJWT({ id: user.id, email: user.email })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(Math.floor(Date.now() / 1000) + JWT_EXPIRATION)
-    .sign(JWT_SECRET);
+    const token = await new SignJWT({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime(Math.floor(Date.now() / 1000) + JWT_EXPIRATION)
+      .sign(JWT_SECRET);
 
     console.log("generated token", typeof token, token);
 
@@ -75,8 +78,6 @@ export async function POST(req: Request) {
       path: "/", // Make the cookie available for all routes
       sameSite: "strict", // prevent csrf
     });
-
-
 
     return response;
   } catch (error) {

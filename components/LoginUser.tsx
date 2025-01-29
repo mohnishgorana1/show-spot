@@ -11,12 +11,17 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { LoginFormValues, loginSchema } from "@/lib/validations/loginSchema";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { loginUser } from "@/store/slices/authSlice";
 
 export default function LoginUser() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, error } = useSelector(
+    (state: RootState) => state.auth
+  ); // Access Redux state
 
   const {
     register,
@@ -31,17 +36,20 @@ export default function LoginUser() {
     try {
       console.log("Login data", data);
 
-      const response = await axios.post("/api/auth/login", data);
-
+      // const response = await axios.post("/api/auth/login", data);
+      const response = await dispatch(loginUser(data)).unwrap(); // Dispatch loginUser action
       console.log("Response", response);
 
-      if (response.data.success) {
-        toast.success("Login Successful!");
-        localStorage.setItem("authToken", response.data?.token); // Store token
-        router.push("/");
-      } else {
-        toast.error(response.data.message || "Login failed. Try again.");
-      }
+      // if (response.data.success) {
+      //   toast.success("Login Successful!");
+      //   localStorage.setItem("authToken", response.data?.token); // Store token
+      //   router.push("/");
+      // } else {
+      //   toast.error(response.data.message || "Login failed. Try again.");
+      // }
+
+      toast.success("Login Successful!");
+      router.push("/");
     } catch (err) {
       console.error(err);
       toast.error("An error occurred. Please try again.");

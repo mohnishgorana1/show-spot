@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Menubar,
   MenubarContent,
@@ -10,8 +12,25 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { MenuIcon } from "lucide-react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { logoutUser } from "@/store/slices/authSlice";
 
 function Header() {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { isAuthenticated, user, loading } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    window.location.reload();
+  };
+
   return (
     <header className="">
       <div className="flex items-center justify-between ">
@@ -24,21 +43,36 @@ function Header() {
         {/* desktop menu */}
         <nav className="hidden md:flex items-baseline gap-x-8">
           <Link href="/" passHref>
-            <span className="hover:text-gray-400 hover:underline cursor-pointer">Home</span>
+            <span className="hover:text-gray-400 hover:underline cursor-pointer">
+              Home
+            </span>
           </Link>
           <Link href="/events" passHref>
-            <span className="hover:text-gray-400 hover:underline cursor-pointer">Events</span>
-          </Link>
-          <Link href="/auth/login" passHref>
-            <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded ">
-              Login
+            <span className="hover:text-gray-400 hover:underline cursor-pointer">
+              Events
             </span>
           </Link>
-          <Link href="/auth/register" passHref>
-            <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded ">
-              Register
+          {isAuthenticated ? (
+            <span
+              onClick={handleLogout}
+              className="hover:bg-red-100 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-2 px-4 font-semibold rounded"
+            >
+              Logout
             </span>
-          </Link>
+          ) : (
+            <>
+              <Link href="/auth/login" passHref>
+                <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded">
+                  Login
+                </span>
+              </Link>
+              <Link href="/auth/register" passHref>
+                <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded">
+                  Register
+                </span>
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* mobile nav */}
@@ -46,7 +80,7 @@ function Header() {
           <Menubar>
             <MenubarMenu>
               <MenubarTrigger>
-                <MenuIcon className="size-5"/>
+                <MenuIcon className="size-5" />
               </MenubarTrigger>
               <MenubarContent className="mr-5 flex flex-col items-center bg-white text-slate-900 font-semibold">
                 <MenubarItem>
@@ -66,18 +100,29 @@ function Header() {
                 </MenubarItem>
                 <MenubarSeparator />
                 <div className="border-t w-full flex items-center flex-col">
-                  <MenubarItem>
-                    {" "}
-                    <Link href="/auth/login" passHref>
-                      <span className="">Login</span>
-                    </Link>
-                  </MenubarItem>
-                  <MenubarItem>
-                    {" "}
-                    <Link href="/auth/register" passHref>
-                      <span className="">Register</span>
-                    </Link>
-                  </MenubarItem>
+                  {isAuthenticated ? (
+                    <MenubarItem>
+                      <span
+                        onClick={handleLogout}
+                        className="hover:bg-red-100 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-2 px-4 font-semibold rounded"
+                      >
+                        Logout
+                      </span>
+                    </MenubarItem>
+                  ) : (
+                    <>
+                      <MenubarItem>
+                        <Link href="/auth/login" passHref>
+                          <span className="">Login</span>
+                        </Link>
+                      </MenubarItem>
+                      <MenubarItem>
+                        <Link href="/auth/register" passHref>
+                          <span className="">Register</span>
+                        </Link>
+                      </MenubarItem>
+                    </>
+                  )}
                 </div>
               </MenubarContent>
             </MenubarMenu>

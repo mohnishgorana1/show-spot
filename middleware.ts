@@ -28,11 +28,11 @@ export async function middleware(req: NextRequest) {
 
   try {
     // Verify token
-    console.log("got token", token);
+    // console.log("got token", token);
     
     // const decoded = jwt.verify(token.value, JWT_SECRET);
     const decoded = await jwtVerify(token.value, JWT_SECRET);
-    console.log("decoded user", decoded);
+    // console.log("decoded user", decoded);
     
 
     // Optionally, pass user data to the next request
