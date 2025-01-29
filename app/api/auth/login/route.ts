@@ -2,15 +2,18 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "@/models/user.model";
+import dbConnect from "@/lib/dbConnect";
+import { SignJWT } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
-const JWT_EXPIRATION = "1h"; // Token validity duration.
+// const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+const JWT_EXPIRATION = 60 * 60; // Token validity duration.
 
 export async function POST(req: Request) {
+  await dbConnect();
   try {
     const { email, password } = await req.json();
     console.log("Login Data", email, password);
-    
 
     // Validate input
     if (!email || !password) {
@@ -39,15 +42,24 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRATION,
-    });
+    // Generate JWT token withour jose
+    // const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+    //   expiresIn: JWT_EXPIRATION,
+    // });
 
-    console.log("Response", token, user);
+
+    console.log("Got user and passsword correct");
     
+    // Generate JWT token using jose
+    const token = await new SignJWT({ id: user.id, email: user.email })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(Math.floor(Date.now() / 1000) + JWT_EXPIRATION)
+    .sign(JWT_SECRET);
 
-    return NextResponse.json(
+    console.log("generated token", typeof token, token);
+
+    const response = NextResponse.json(
       {
         success: true,
         message: "Login successful",
@@ -55,6 +67,18 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
+
+    response.cookies.set("authToken", token, {
+      httpOnly: true, // cookies accessible only by server
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production:
+      maxAge: 60 * 60, // 1 hr,
+      path: "/", // Make the cookie available for all routes
+      sameSite: "strict", // prevent csrf
+    });
+
+
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
