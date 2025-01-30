@@ -6,15 +6,25 @@ import jwt from "jsonwebtoken";
 export async function POST(req: Request) {
   await dbConnect();
 
-  const { email, password } = await req.json();
-  console.log("loginFormData", email, password);
+  const { name, email, password, confirmPassword } = await req.json();
+  console.log("register Form Data", email, password);
 
   // validations
-  if (!email || !password) {
+  if (!name || !email || !password || !confirmPassword) {
     return new Response(
       JSON.stringify({
         success: false,
-        message: "Invalid or Missing Data: Can't Log In User",
+        message: "Invalid or Missing Data: Can't Register User",
+      }),
+      { status: 400 }
+    );
+  }
+
+  if (password !== confirmPassword) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Passwords do not match",
       }),
       { status: 400 }
     );
@@ -23,48 +33,40 @@ export async function POST(req: Request) {
   try {
     // Check if the user exists
     const existingUser = await User.findOne({ email });
-    if (!existingUser) {
+    if (existingUser) {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Error: User does not exist with this email",
+          message: "Error: User Already exist with this email",
         }),
         { status: 404 }
       );
     }
 
-    // Check if the password is correct
-    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
-    if (!isPasswordCorrect) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Error: Invalid email or password",
-        }),
-        { status: 401 }
-      );
-    }
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate a JWT token
-    const token = jwt.sign(
-      { id: existingUser._id, email: existingUser.email },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
-    );
+    // Create user
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Login Successful",
-        token,
+        message: "Register Successful",
       }),
       { status: 200 }
     );
   } catch (error) {
-    console.log("Error: Can't Log In User", error);
+    console.log("Error: Can't Register User", error);
 
     return new Response(
-      JSON.stringify({ success: false, message: "Error: Can't Log In User" }),
+      JSON.stringify({ success: false, message: "Error: Can't Register User" }),
       { status: 500 }
     );
   }

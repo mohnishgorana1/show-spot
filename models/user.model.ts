@@ -6,6 +6,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "user" | "admin" | "organiser"; // Define roles for authorization
+  reasonForOrganiser?: string; // Reason for requesting organiser role
+  organiserRequestStatus: "pending" | "approved" | "rejected"; // Request status
   isActive: boolean; // To handle account status
   myEvents: mongoose.Schema.Types.ObjectId[]; // Events created by organiser
   createdAt: Date;
@@ -39,6 +41,15 @@ const userSchema = new mongoose.Schema<IUser>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    reasonForOrganiser: {
+      type: String,
+      trim: true,
+    },
+    organiserRequestStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
     myEvents: [
       {

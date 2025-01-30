@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +10,6 @@ function HomeComponent() {
 
   return (
     <div>
-      
       <section>
         <h1>Auth States</h1>
         {/* {isAuthenticated && <p>{isAuthenticated}</p>} */}

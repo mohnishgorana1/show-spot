@@ -1,10 +1,13 @@
+import BecomeOrganiserForm from '@/components/BecomeOrganiserForm'
 import React from 'react'
 
 
 
 function OrganiserForm() {
   return (
-    <div>OrganiserForm</div>
+    <main>
+      <BecomeOrganiserForm />
+    </main>
   )
 }
 
