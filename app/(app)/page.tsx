@@ -1,7 +1,6 @@
-import React from 'react'
+import HomeComponent from "@/components/HomeComponent";
 
-
-
+import React from "react";
 
 //* Displays featured/upcoming events.
 //* Search and filter options (by category, date, etc.).
@@ -9,8 +8,10 @@ import React from 'react'
 
 function Home() {
   return (
-    <main className='px-2 md:px-4'>Home</main>
-  )
+    <main className="px-2 md:px-4">
+      <HomeComponent />
+    </main>
+  );
 }
 
-export default Home
+export default Home;

@@ -30,7 +30,12 @@ export async function GET(req: Request) {
       {
         success: true,
         isAuthenticated: true,
-        user: { email: verified.email, name: verified.name, id: verified.id },
+        user: {
+          email: (await verified).payload.email,
+          name: (await verified).payload.name,
+          id: (await verified).payload.id,
+          role: (await verified).payload.role,
+        },
       },
       { status: 200 }
     );

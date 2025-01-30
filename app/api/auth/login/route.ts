@@ -54,6 +54,7 @@ export async function POST(req: Request) {
       id: user.id,
       email: user.email,
       name: user.name,
+      role: "user",
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
@@ -62,11 +63,19 @@ export async function POST(req: Request) {
 
     console.log("generated token", typeof token, token);
 
+    const userToSent = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: "user",
+    };
+    
     const response = NextResponse.json(
       {
         success: true,
         message: "Login successful",
         token,
+        user: userToSent,
       },
       { status: 200 }
     );

@@ -12,7 +12,7 @@ import axios from "axios";
 import Link from "next/link";
 import { LoginFormValues, loginSchema } from "@/lib/validations/loginSchema";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { loginUser } from "@/store/slices/authSlice";
 
 export default function LoginUser() {
