@@ -5,8 +5,9 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: "user" | "admin"; // Define roles for authorization
+  role: "user" | "admin" | "organiser"; // Define roles for authorization
   isActive: boolean; // To handle account status
+  myEvents: mongoose.Schema.Types.ObjectId[]; // Events created by organiser
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,13 +33,19 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["user", "admin"], // Add more roles if needed
+      enum: ["user", "admin", "organiser"], // Add more roles if needed
       default: "user",
     },
     isActive: {
       type: Boolean,
       default: true,
     },
+    myEvents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event", // Reference to the Event model
+      },
+    ],
   },
   {
     timestamps: true, // Automatically create `createdAt` and `updatedAt` fields
@@ -47,6 +54,5 @@ const userSchema = new mongoose.Schema<IUser>(
 
 // Create a model
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-
 
 export default User;

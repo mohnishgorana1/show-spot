@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { logoutUser } from "@/store/slices/authSlice";
+import { Button } from "./ui/button";
 
 function Header() {
   const router = useRouter();
@@ -53,23 +54,23 @@ function Header() {
             </span>
           </Link>
           {isAuthenticated ? (
-            <span
+            <button
               onClick={handleLogout}
-              className="hover:bg-red-100 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-2 px-4 font-semibold rounded"
+              className="hover:bg-red-700 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-1 px-4 font-semibold rounded flex w-full items-center justify-center"
             >
-              Logout
-            </span>
+              <span>Logout</span>
+            </button>
           ) : (
             <>
               <Link href="/auth/login" passHref>
-                <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded">
+                <Button className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded">
                   Login
-                </span>
+                </Button>
               </Link>
               <Link href="/auth/register" passHref>
-                <span className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded">
+                <Button className="hover:bg-blue-100 hover:ease-linear duration-100 cursor-pointer bg-white text-blue-600 py-2 px-4 font-semibold rounded">
                   Register
-                </span>
+                </Button>
               </Link>
             </>
           )}
@@ -102,23 +103,23 @@ function Header() {
                 <div className="border-t w-full flex items-center flex-col">
                   {isAuthenticated ? (
                     <MenubarItem>
-                      <span
+                      <Button
                         onClick={handleLogout}
                         className="hover:bg-red-100 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-2 px-4 font-semibold rounded"
                       >
                         Logout
-                      </span>
+                      </Button>
                     </MenubarItem>
                   ) : (
                     <>
                       <MenubarItem>
                         <Link href="/auth/login" passHref>
-                          <span className="">Login</span>
+                          <Button className="">Login</Button>
                         </Link>
                       </MenubarItem>
                       <MenubarItem>
                         <Link href="/auth/register" passHref>
-                          <span className="">Register</span>
+                          <Button className="">Register</Button>
                         </Link>
                       </MenubarItem>
                     </>
