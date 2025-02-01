@@ -58,11 +58,20 @@ function Header() {
           </Link>
           {isAuthenticated ? (
             <div className="flex gap-x-2">
-              <Link href={"/organiser"}>
-                <Button className="bg-green-600 font-semibold hover:bg-green-700">
-                  Become an Event Organier
-                </Button>
-              </Link>
+              {user?.role === "user" && (
+                <Link href={"/organiser"}>
+                  <Button className="bg-green-600 font-semibold hover:bg-green-700">
+                    Become an Event Organier
+                  </Button>
+                </Link>
+              )}
+              {user?.role === "admin" && (
+                <Link href={"/admin"}>
+                  <Button className="bg-green-600 font-semibold hover:bg-green-700">
+                    Admin
+                  </Button>
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="hover:bg-red-700 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-1 px-4 font-semibold rounded flex w-full items-center justify-center"

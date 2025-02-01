@@ -47,14 +47,14 @@ export async function POST(req: Request) {
     //   expiresIn: JWT_EXPIRATION,
     // });
 
-    console.log("Got user and passsword correct");
+    console.log("Got user and passsword correct", user);
 
     // Generate JWT token using jose
     const token = await new SignJWT({
       id: user.id,
       email: user.email,
       name: user.name,
-      role: "user",
+      role: user.role,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: "user",
+      role: user.role,
     };
     
     const response = NextResponse.json(

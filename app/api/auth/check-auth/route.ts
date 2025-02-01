@@ -26,6 +26,8 @@ export async function GET(req: Request) {
     const verified = jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
     console.log("verrified", (await verified).payload);
 
+    
+
     return NextResponse.json(
       {
         success: true,

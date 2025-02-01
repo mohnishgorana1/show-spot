@@ -1,14 +1,14 @@
-import BecomeOrganiserForm from '@/components/BecomeOrganiserForm'
-import React from 'react'
+import BecomeOrganiserForm from "@/components/BecomeOrganiserForm";
+import React from "react";
+
+async function OrganiserForm() {
 
 
-
-function OrganiserForm() {
   return (
     <main>
       <BecomeOrganiserForm />
     </main>
-  )
+  );
 }
 
-export default OrganiserForm
+export default OrganiserForm;
