@@ -1,3 +1,4 @@
+import RegisterEventForm from '@/components/RegisterEventForm'
 import React from 'react'
 
 // Only accessible by Organiser; if not organiser then a button to become an organiser 
@@ -8,7 +9,9 @@ import React from 'react'
 
 function RegisterEventPage() {
   return (
-    <div>RegisterEventPage</div>
+    <main>
+      <RegisterEventForm />
+    </main>
   )
 }
 

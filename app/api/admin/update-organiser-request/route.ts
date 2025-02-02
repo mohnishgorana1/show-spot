@@ -23,12 +23,19 @@ export async function POST(req: Request) {
       );
     }
 
+    const updateData: any = {
+      organiserRequestStatus: status,
+    };
+
+    // If the request is approved, update the role to "organiser"
+    if (status === "approved") {
+      updateData.role = "organiser";
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
-        userId,
+      userId,
       {
-        $set: {
-          organiserRequestStatus: status, // Update the status
-        },
+        $set: updateData,
       },
       { new: true }
     );

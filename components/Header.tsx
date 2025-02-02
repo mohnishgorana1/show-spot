@@ -72,6 +72,20 @@ function Header() {
                   </Button>
                 </Link>
               )}
+              {user?.role === "organiser" && (
+                <Link href={"/organiser/my-events"}>
+                  <Button className="bg-green-600 font-semibold hover:bg-green-700">
+                    My Events
+                  </Button>
+                </Link>
+              )}
+              {user?.role === "organiser" && (
+                <Link href={"/organiser/register-event"}>
+                  <Button className="bg-green-600 font-semibold hover:bg-green-700">
+                    Register New Event
+                  </Button>
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className="hover:bg-red-700 hover:ease-linear duration-100 cursor-pointer bg-red-600 text-white py-1 px-4 font-semibold rounded flex w-full items-center justify-center"
