@@ -21,12 +21,12 @@ function ManageOrganisersRequest({
 }: {
   allOrganisersRequestData: any[];
 }) {
-  const user = useSelector((state: RootState) => state.auth.user);
-  console.log("id", user?.id);
-
+  // Manage state for organiser requests
+  const [requests, setRequests] = useState(allOrganisersRequestData); // basically some users
   const [activeTab, setActiveTab] = useState("Pending");
 
-  const filteredData = allOrganisersRequestData.filter(
+
+  const filteredData = requests.filter(
     (user) =>
       user.organiserRequestStatus.toLowerCase() === activeTab.toLowerCase()
   );
@@ -46,6 +46,15 @@ function ManageOrganisersRequest({
       // alert(`Request ${status} successfully!`);
       toast.success(`Request ${status} successfully`);
       // Optional: Reload page or update state here
+
+      // Update the UI immediately without refreshing
+      setRequests((prevRequests) =>
+        prevRequests.map((req) =>
+          req._id === userId ? { ...req, organiserRequestStatus: status } : req
+        )
+      );
+
+      
     } catch (error) {
       console.error("Error updating request:", error);
       toast.error(`Something went wrong while updating organiser request`);
@@ -150,3 +159,4 @@ function ManageOrganisersRequest({
 }
 
 export default ManageOrganisersRequest;
+
