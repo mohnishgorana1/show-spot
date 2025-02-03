@@ -1,14 +1,13 @@
 // Stores event details (title, description, date, time, location, category, price, etc.).
 // Associations with the organizer (User ID).
 // Ticket availability and booking status.
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { EventCategory, EventState } from "../constants/index";
 
 export interface IEvent extends Document {
   title: string;
   description: string;
-  date: Date;
-  time: string;
+  dateTime: Date; // Combined Date & Time
   location: string;
   state: EventState;
   organiser: mongoose.Schema.Types.ObjectId;
@@ -25,8 +24,7 @@ const eventSchema = new mongoose.Schema<IEvent>(
   {
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
-    date: { type: Date, required: true },
-    time: { type: String, required: true },
+    dateTime: { type: Date, required: true }, // Combined date & time
     location: { type: String, required: true },
     organiser: {
       type: mongoose.Schema.Types.ObjectId,
@@ -46,7 +44,7 @@ const eventSchema = new mongoose.Schema<IEvent>(
     capacity: { type: Number, default: 100 },
     attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     price: { type: Number, default: 0 },
-    isPublished: { type: Boolean, default: false },  // organiser can publish event after admin approval
+    isPublished: { type: Boolean, default: false }, // organiser can publish event after admin approval
   },
   {
     timestamps: true,

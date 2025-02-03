@@ -14,13 +14,32 @@ import {
   registerEventSchema,
 } from "@/lib/validations/registerEventSchema";
 
+// MUI Date & Time Picker
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
+import { EventCategory } from "@/constants";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export default function RegisterEventForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs());
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const {
     register,
     handleSubmit,
+    setValue, // Manually update dateTime field
     formState: { errors },
   } = useForm<RegisterEventFormValues>({
     resolver: zodResolver(registerEventSchema),
@@ -28,16 +47,27 @@ export default function RegisterEventForm() {
 
   const onSubmit: SubmitHandler<RegisterEventFormValues> = async (data) => {
     setLoading(true);
+    const formattedData = {
+      ...data,
+      dateTime: dateTime?.toISOString() || "", // Convert to ISO format for backend
+      price: Number(data.price), // Ensure price is a number
+      capacity: Number(data.capacity) || 100,
+      category: data.category,
+      organiserId: user?.id,
+    };
     try {
-      console.log("Register Event Data", data);
+      console.log("Register Event Data", formattedData);
 
-      const response = await axios.post("/api/events/register", data);
+      const response = await axios.post(
+        "/api/events/register-event",
+        formattedData
+      );
 
       console.log("Response", response);
 
       if (response.data.success) {
         toast.success("Event Registered Successfully!");
-        router.push("/events");
+        router.push(`/events/${response.data.event?._id}`);
       } else {
         toast.error("Can't register event. Try Again Later");
       }
@@ -55,12 +85,15 @@ export default function RegisterEventForm() {
         onSubmit={handleSubmit(onSubmit)}
         className="bg-slate-800 max-w-xl w-full md:w-[50%] mx-auto flex flex-col gap-4 p-4 border rounded-md"
       >
-        <div className="text-center md:space-y-2">
+        {/* form header */}
+        <header className="text-center md:space-y-2">
           <h1 className="text-xl md:text-3xl">Create an Event</h1>
           <h2 className="hidden md:block text-xl opacity-55">
             Connect with your audience through ShowSpot!
           </h2>
-        </div>
+        </header>
+
+        {/* title */}
         <div>
           <Input
             placeholder="Event Title"
@@ -71,6 +104,8 @@ export default function RegisterEventForm() {
             <p className="text-red-500 text-sm">{errors.title.message}</p>
           )}
         </div>
+
+        {/* description */}
         <div>
           <Input
             placeholder="Description"
@@ -81,28 +116,95 @@ export default function RegisterEventForm() {
             <p className="text-red-500 text-sm">{errors.description.message}</p>
           )}
         </div>
+
+        {/* MUI Date & Time Picker */}
         <div>
-          <Input
-            type="date"
-            placeholder="Date"
-            {...register("date")}
-            className={errors.date ? "border-red-500" : ""}
-          />
+          <label className="text-gray-300">Event Date & Time</label>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <MobileDateTimePicker
+              value={dateTime}
+              onChange={(newValue) => {
+                setDateTime(newValue);
+                setValue("dateTime", newValue?.toISOString() || ""); // Sync with react-hook-form
+              }}
+              className="w-full bg-gray-700 text-white rounded border border-gray-500 focus:border-blue-500"
+              slots={{ toolbar: null }}
+            />
+          </LocalizationProvider>
           {errors.date && (
             <p className="text-red-500 text-sm">{errors.date.message}</p>
           )}
         </div>
+
+        {/* category select */}
         <div>
-          <Input
-            type="time"
-            placeholder="Time"
-            {...register("time")}
-            className={errors.time ? "border-red-500" : ""}
-          />
-          {errors.time && (
-            <p className="text-red-500 text-sm">{errors.time.message}</p>
+          <label className="block text-sm font-medium">Category</label>
+          <Select
+            onValueChange={(value: any) => setValue("category", value)}
+            defaultValue=""
+          >
+            <SelectTrigger
+              className={`border p-2 rounded w-full ${
+                errors.category ? "border-red-500" : ""
+              }`}
+            >
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900">
+              {Object.values(EventCategory).map((category) => (
+                <SelectItem
+                  key={category}
+                  value={category}
+                  className="hover:bg-slate-800"
+                >
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.category && (
+            <p className="text-red-500 text-sm">{errors.category.message}</p>
           )}
         </div>
+
+        {/* price */}
+        <div>
+          <Input
+            type="number"
+            placeholder="Price (₹)"
+            {...register("price", {
+              valueAsNumber: true, // Ensures the value is stored as a number
+            })}
+            onChange={(e) => {
+              // Manually convert value to number
+              const value = e.target.value ? Number(e.target.value) : 0;
+              setValue("price", value); // Update the value in react-hook-form
+            }}
+            className={errors.price ? "border-red-500" : ""}
+          />
+          {errors.price && (
+            <p className="text-red-500 text-sm">{errors.price.message}</p>
+          )}
+        </div>
+
+        {/* capacity */}
+        <div>
+          <Input
+            type="number"
+            placeholder="Capacity (Max Attendees)"
+            {...register("capacity", { valueAsNumber: true })}
+            onChange={(e) => {
+              const value = e.target.value ? Number(e.target.value) : 1; // Default to 1
+              setValue("capacity", value);
+            }}
+            className={errors.capacity ? "border-red-500" : ""}
+          />
+          {errors.capacity && (
+            <p className="text-red-500 text-sm">{errors.capacity.message}</p>
+          )}
+        </div>
+
+        {/* location */}
         <div>
           <Input
             placeholder="Location"
@@ -113,6 +215,8 @@ export default function RegisterEventForm() {
             <p className="text-red-500 text-sm">{errors.location.message}</p>
           )}
         </div>
+
+        {/* submit button */}
         <Button
           type="submit"
           className="w-full bg-blue-700 text-lg hover:bg-blue-800"
@@ -121,9 +225,10 @@ export default function RegisterEventForm() {
           {loading ? "Registering Event..." : "Register Event"}
         </Button>
 
+        {/* footer (contact) */}
         <footer className="text-center">
           <p className="text-gray-400">
-            Need help? {" "}
+            Need help?{" "}
             <span className="block md:inline underline text-blue-600">
               <Link href="/support">Contact Support</Link>
             </span>
