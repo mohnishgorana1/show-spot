@@ -1,16 +1,20 @@
-import React from 'react'
-
+import EventDetails from "@/components/EventDetails";
 
 // Shows event details (title, description, location, date, price, etc.).
 // "Register Now" button (if logged in).
 // Organizer details.
 // Related events.
 
+function EventDetailsPage({ params }: { params: { eventId: string } }) {
+  const eventId = params.eventId;
 
-function EventDetail() {
   return (
-    <div>EventDetail</div>
-  )
+    <main>
+      <section>
+        <EventDetails eventId={eventId} />
+      </section>
+    </main>
+  );
 }
 
-export default EventDetail
+export default EventDetailsPage;
