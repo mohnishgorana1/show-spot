@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaMapMarkerAlt, FaCalendarAlt, FaUser } from "react-icons/fa";
 
@@ -39,7 +40,9 @@ function EventDetails({ eventId }: { eventId: string }) {
       ) : eventDetails ? (
         <div className="bg-gray-900 text-white p-6 rounded-lg shadow-md">
           {/* Title */}
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-7">{eventDetails.title}</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-7">
+            {eventDetails.title}
+          </h1>
 
           {/* Event Info */}
           <div className="space-y-3">
@@ -58,14 +61,18 @@ function EventDetails({ eventId }: { eventId: string }) {
           </div>
 
           {/* Price & Registration */}
-          <div className="mt-6 flex flex-col sm:flex-row justify-between items-center">
+          <Link
+            href={`enroll-event-${eventId}`}
+            className="mt-6 flex flex-col sm:flex-row justify-between items-center"
+          >
             <p className="text-lg font-semibold">
-              Price : {eventDetails?.price > 0 ? `₹${eventDetails?.price}` : "Free"}
+              Price :{" "}
+              {eventDetails?.price > 0 ? `₹${eventDetails?.price}` : "Free"}
             </p>
             <button className="mt-3 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition">
               Register Now
             </button>
-          </div>
+          </Link>
 
           {/* Organizer Info */}
           <div className="mt-6 text-gray-400 flex items-center">

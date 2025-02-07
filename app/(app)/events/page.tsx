@@ -10,7 +10,13 @@ import React from 'react'
 
 function EventsListingPage() {
   return (
-    <div>EventsListingPage</div>
+    <main>
+      {/* search bar */}
+      {/* filers search*/}
+      {/* carousel for featured events */}
+      {/* event listing component */}
+      {/* pagination */}
+    </main>
   )
 }
 
