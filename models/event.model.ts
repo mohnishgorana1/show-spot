@@ -10,6 +10,11 @@ export interface IEvent extends Document {
   dateTime: Date; // Combined Date & Time
   location: string;
   state: EventState;
+  eventThumbnail: {
+    public_id: string;
+    secure_url: string;
+    download_url: string;
+  };
   organiser: mongoose.Schema.Types.ObjectId;
   category: EventCategory;
   capacity: number;
@@ -30,6 +35,20 @@ const eventSchema = new mongoose.Schema<IEvent>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    eventThumbnail: {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      secure_url: {
+        type: String,
+        required: true,
+      },
+      download_url: {
+        type: String,
+        required: true,
+      },
     },
     category: {
       type: String,

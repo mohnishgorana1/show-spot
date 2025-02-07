@@ -29,6 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "./ui/label";
+import Image from "next/image";
 
 export default function RegisterEventForm() {
   const [loading, setLoading] = useState(false);
@@ -36,35 +38,68 @@ export default function RegisterEventForm() {
   const [dateTime, setDateTime] = useState<Dayjs | null>(dayjs());
   const user = useSelector((state: RootState) => state.auth.user);
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
-    setValue, // Manually update dateTime field
+    setValue, // Manually update some field
     formState: { errors },
   } = useForm<RegisterEventFormValues>({
     resolver: zodResolver(registerEventSchema),
   });
 
-  const onSubmit: SubmitHandler<RegisterEventFormValues> = async (data) => {
-    setLoading(true);
-    const formattedData = {
-      ...data,
-      dateTime: dateTime?.toISOString() || "", // Convert to ISO format for backend
-      price: Number(data.price), // Ensure price is a number
-      capacity: Number(data.capacity) || 100,
-      category: data.category,
-      organiserId: user?.id,
-    };
-    try {
-      console.log("Register Event Data", formattedData);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
+  const onSubmit: SubmitHandler<RegisterEventFormValues> = async (data) => {
+    console.log("submitting trye");
+    if (!selectedFile) {
+      toast.error("Event image is required!");
+      return;
+    }
+    setLoading(true);
+    // const formattedData = {
+    //   ...data,
+    //   dateTime: dateTime?.toISOString() || "", // Convert to ISO format for backend
+    //   price: Number(data.price), // Ensure price is a number
+    //   capacity: Number(data.capacity) || 100,
+    //   category: data.category,
+    //   organiserId: user?.id,
+    // };
+
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("dateTime", dateTime?.toISOString() || "");
+    formData.append("price", data.price.toString());
+    formData.append("capacity", data.capacity.toString());
+    formData.append("location", data.location);
+    formData.append("category", data.category);
+    formData.append("organiserId", user?.id || "");
+    formData.append("eventThumbnail", selectedFile);
+
+    for (const value of formData.values()) {
+      console.log(value);
+    }
+
+    try {
       const response = await axios.post(
         "/api/events/register-event",
-        formattedData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-
       console.log("Response", response);
-
       if (response.data.success) {
         toast.success("Event Registered Successfully!");
         router.push(`/events/${response.data.event?._id}`);
@@ -213,6 +248,19 @@ export default function RegisterEventForm() {
           />
           {errors.location && (
             <p className="text-red-500 text-sm">{errors.location.message}</p>
+          )}
+        </div>
+
+        <div>
+          <input type="file" onChange={handleFileChange} accept="image/*" />
+          {preview && (
+            <Image
+              src={preview}
+              alt="Preview"
+              width={50}
+              height={50}
+              className="w-32 h-32"
+            />
           )}
         </div>
 
