@@ -96,6 +96,14 @@ export async function POST(req: Request) {
       organiser: organiser._id,
       state: EventState.DRAFT, // default state since event is just created and need to be approved
     });
+
+    // Update user's myEvents array
+    await User.findByIdAndUpdate(
+      organiserId,
+      { $push: { myEvents: newEvent._id } }, // Push new event to myEvents array
+      { new: true }
+    );
+
     await newEvent.save();
 
     console.log("new event", newEvent);
