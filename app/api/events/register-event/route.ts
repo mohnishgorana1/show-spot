@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     );
     const uploadResponse: any = await UploadFileToCloudinary(
       eventThumbnail,
-      "events"
+      "show-spot"
     );
     console.log("Cloudinary Upload Response:", uploadResponse);
     const { asset_id, public_id, secure_url } = uploadResponse;

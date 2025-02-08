@@ -1,5 +1,6 @@
 "use client";
 import EventCard from "@/components/EventCard";
+import { Input } from "@/components/ui/input";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -46,51 +47,53 @@ function EventsListingPage() {
   };
 
   return (
-    <main className="p-4">
-      {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search events..."
-        className="w-full px-4 py-2 mb-4 border border-gray-600 rounded-md bg-gray-800 text-white"
-        onChange={(e) =>
-          setFilters((prev) => ({ ...prev, search: e.target.value }))
-        }
-      />
-
-      {/* Filters */}
-      <div className="flex gap-4 mb-4">
-        <select
-          className="px-2 py-1 border border-gray-600 rounded-md bg-gray-800 text-white"
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, category: e.target.value }))
-          }
-        >
-          <option value="">All Categories</option>
-          <option value="Music">Music</option>
-          <option value="Technology">Technology</option>
-          <option value="Business">Business</option>
-        </select>
-
-        <input
+    <main className="p-4 space-y-3">
+      <section className="w-full grid grid-cols-5 gap-x-3">
+        <Input
           type="text"
-          placeholder="Location"
-          className="px-2 py-1 border border-gray-600 rounded-md bg-gray-800 text-white"
+          placeholder="Search events..."
+          className="col-span-3 px-2 py-1 h-8 border border-gray-600 rounded-md bg-gray-800 text-white"
           onChange={(e) =>
-            setFilters((prev) => ({ ...prev, location: e.target.value }))
+            setFilters((prev) => ({ ...prev, search: e.target.value }))
           }
         />
 
-        <select
-          className="px-2 py-1 border border-gray-600 rounded-md bg-gray-800 text-white"
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, price: e.target.value }))
-          }
-        >
-          <option value="">All Prices</option>
-          <option value="free">Free</option>
-          <option value="paid">Paid</option>
-        </select>
-      </div>
+        {/* Filters */}
+        <div className="col-span-2 grid grid-cols-3 gap-x-2">
+          <select
+            className="px-2 border border-gray-600 rounded-md bg-gray-800 text-white"
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, category: e.target.value }))
+            }
+          >
+            <option value="">All Categories</option>
+            <option value="Music">Music</option>
+            <option value="Technology">Technology</option>
+            <option value="Business">Business</option>
+          </select>
+
+          <input
+            type="text"
+            placeholder="Location"
+            className="px-2 border border-gray-600 rounded-md bg-gray-800 text-white"
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, location: e.target.value }))
+            }
+          />
+
+          <select
+            className="px-2 border border-gray-600 rounded-md bg-gray-800 text-white"
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, price: e.target.value }))
+            }
+          >
+            <option value="">All Prices</option>
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+      </section>
+      {/* Search Bar */}
 
       {/* Events List */}
       {loading ? (

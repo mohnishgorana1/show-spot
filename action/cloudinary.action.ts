@@ -4,7 +4,7 @@ export const UploadFileToCloudinary = async (file: File, folder: string) => {
   const buffer = await file.arrayBuffer();
   const bytes = Buffer.from(buffer);
 
-  console.log("Bytes", bytes);
+  console.log("Bytes", bytes, "folder", folder);
 
   return new Promise(async (resolve, reject) => {
     await cloudinary.uploader

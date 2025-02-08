@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const limit = Number(searchParams.get("limit")) || 10;
 
     // Query filters
-    const query: any = { isPublished: false, state: "Approved" }; // Fetch only approved & published events
+    const query: any = { isPublished: true, state: "Approved" }; // Fetch only approved & published events
 
     if (category) query.category = category;
     if (location) query.location = { $regex: location, $options: "i" };

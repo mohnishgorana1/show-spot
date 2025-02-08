@@ -12,6 +12,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
+import { Button } from "./ui/button";
 
 const TABS = ["Draft", "Pending Approval", "Approved", "Rejected"];
 
@@ -40,6 +41,23 @@ function MyEvents() {
       console.log("Failed to fetch events", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePublishEvent = async (
+    eventId: string,
+    publishStatus: boolean
+  ) => {
+    console.log("publish", eventId, publishStatus);
+    const { data } = await axios.patch("/api/events/update-publish-event", {
+      eventId,
+      publishStatus,
+    });
+    if (data.success) {
+      toast.success("Event Published Successfully");
+      fetchMyEvents();
+    } else {
+      toast.error("Error publishing event!");
     }
   };
   useEffect(() => {
@@ -90,25 +108,42 @@ function MyEvents() {
             <AccordionItem
               key={event._id}
               value={event._id}
-              className="border border-gray-700 rounded-lg"
+              className="border border-gray-700 rounded-lg group"
             >
               <AccordionTrigger className="flex justify-between px-4 py-3 bg-gray-900 hover:bg-gray-800 rounded-lg text-white">
-                <span>
-                  {event.title} -{" "}
-                  <span
-                    className={`${
-                      event.state === "Draft"
-                        ? "text-blue-500"
-                        : event.state === "Pending Approval"
-                        ? "text-yellow-500"
-                        : event.state === "Approved"
-                        ? "text-green-500"
-                        : "text-red-600"
-                    }`}
+                <div className="w-full flex justify-between items-center pr-5 ">
+                  <div className="group-hover:underline">
+                    {event.title} -{" "}
+                    <span
+                      className={`${
+                        event.state === "Draft"
+                          ? "text-blue-500"
+                          : event.state === "Pending Approval"
+                          ? "text-yellow-500"
+                          : event.state === "Approved"
+                          ? "text-green-500"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {event.state}
+                    </span>
+                  </div>
+                  <div
+                    onClick={() =>
+                      handlePublishEvent(
+                        event._id,
+                        event.isPublished ? false : true
+                      )
+                    }
+                    className={`${activeTab !== "Approved" && "hidden"} ${
+                      event.isPublished
+                        ? "bg-red-600 hover:bg-red-700"
+                        : "bg-teal-600 hover:bg-teal-700"
+                    } hidden md:flex text-center rounded-lg px-4 py-2  font-semibold no-underline`}
                   >
-                    {event.state}
-                  </span>
-                </span>
+                    {event.isPublished ? "Don't Publish" : "Publish"}
+                  </div>
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <motion.div
@@ -153,6 +188,21 @@ function MyEvents() {
                       <p>
                         <span className="font-bold">Created At:</span>{" "}
                         {new Date(event.createdAt).toLocaleDateString()}
+                      </p>
+                      <p
+                        onClick={() =>
+                          handlePublishEvent(
+                            event._id,
+                            event.isPublished ? false : true
+                          )
+                        }
+                        className={`${activeTab !== "Approved" && "hidden"} ${
+                          event.isPublished
+                            ? "bg-red-600 hover:bg-red-700"
+                            : "bg-teal-600 hover:bg-teal-700"
+                        }  md:hidden text-center rounded-lg px-2 py-2`}
+                      >
+                        {event.isPublished ? "Don't Publish" : "Publish"}
                       </p>
                     </CardContent>
                   </Card>
