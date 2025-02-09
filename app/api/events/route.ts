@@ -26,6 +26,8 @@ export async function GET(req: Request) {
     if (price === "paid") query.price = { $gt: 0 };
     if (search) query.title = { $regex: search, $options: "i" };
 
+
+    
     // Fetch events with pagination
     const events = await Event.find(query)
       .skip((page - 1) * limit)
