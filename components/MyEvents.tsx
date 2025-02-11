@@ -35,7 +35,7 @@ function MyEvents() {
       );
       if (data.success) {
         setEvents(data.myEvents);
-        toast.success("Events Fetched Successfully");
+        // toast.success("Events Fetched Successfully");
       }
     } catch (error) {
       console.log("Failed to fetch events", error);
@@ -64,7 +64,7 @@ function MyEvents() {
     if (user?.id) {
       fetchMyEvents();
     }
-  }, []);
+  }, [user, activeTab]);
 
   if (loading) return <p>Loading events...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -135,11 +135,14 @@ function MyEvents() {
                         event.isPublished ? false : true
                       )
                     }
-                    className={`${activeTab !== "Approved" && "hidden"} ${
+                    className={`${
                       event.isPublished
                         ? "bg-red-600 hover:bg-red-700"
                         : "bg-teal-600 hover:bg-teal-700"
-                    } hidden md:flex text-center rounded-lg px-4 py-2  font-semibold no-underline`}
+                    } ${
+                      activeTab !== "Approved" && "hidden"
+                    } text-center rounded-lg px-4 py-2  font-semibold no-underline 
+                    `}
                   >
                     {event.isPublished ? "Don't Publish" : "Publish"}
                   </div>

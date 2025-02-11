@@ -37,6 +37,8 @@ export default function EventListingComponent({
   });
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
+  
+
   useEffect(() => {
     const queryParams = new URLSearchParams({
       ...Object.fromEntries(
@@ -72,7 +74,7 @@ export default function EventListingComponent({
   };
 
   return (
-    <main className="p-4 space-y-3">
+    <main className="p-4 space-y-8">
       {/* Filters & Search */}
       <section className="w-full grid grid-cols-5 gap-x-3">
         <Input

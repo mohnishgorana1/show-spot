@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Event from "@/models/event.model";
+// import User from "@/models/user.model";
+import "@/models/user.model"; // Ensure it's registered globally
 
 export async function GET(req: Request) {
   await dbConnect();
 
   try {
     // Extract query parameters from the request URL
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = await new URL(req.url);
     const category = searchParams.get("category");
     const location = searchParams.get("location");
     const date = searchParams.get("date");
@@ -26,15 +28,13 @@ export async function GET(req: Request) {
     if (price === "paid") query.price = { $gt: 0 };
     if (search) query.title = { $regex: search, $options: "i" };
 
-
-    
     // Fetch events with pagination
     const events = await Event.find(query)
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ dateTime: 1 })
-      .populate("organiser") // Assuming you have an organiser field in the model
-      .select("-password"); // Exclude password field if applicable
+      .populate({ path: "organiser", model: "User", select: "-password" }); // Assuming you have an organiser field in the model
+    // .select("-password"); // Exclude password field if applicable
 
     const totalEvents = await Event.countDocuments(query);
     const totalPages = Math.ceil(totalEvents / limit);
