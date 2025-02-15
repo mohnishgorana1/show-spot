@@ -7,7 +7,7 @@ import { SignJWT } from "jose";
 
 // const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
-const JWT_EXPIRATION = 60 * 60; // Token validity duration.
+const JWT_EXPIRATION = 24 * 60 * 60; // Token validity duration.
 
 export async function POST(req: Request) {
   await dbConnect();
@@ -64,12 +64,15 @@ export async function POST(req: Request) {
     console.log("generated token", typeof token, token);
 
     const userToSent = {
-      id: user.id,
       email: user.email,
       name: user.name,
+      id: user.id,
       role: user.role,
     };
+
+    console.log("login user to sent ", userToSent);
     
+
     const response = NextResponse.json(
       {
         success: true,
@@ -83,7 +86,7 @@ export async function POST(req: Request) {
     response.cookies.set("authToken", token, {
       httpOnly: true, // cookies accessible only by server
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production:
-      maxAge: 60 * 60, // 1 hr,
+      maxAge: 60 * 60 * 24, // 24 hr,
       path: "/", // Make the cookie available for all routes
       sameSite: "strict", // prevent csrf
     });

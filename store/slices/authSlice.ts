@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { redirect } from "next/navigation";
 
 interface User {
   id: string;
@@ -45,9 +46,11 @@ export const checkAuth = createAsyncThunk<User, void, { rejectValue: string }>(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await axios.get("/api/auth/check-auth");
-      console.log("data checkauth", data);
+      console.log("CheckAuth API response:", data);
 
-      if (!data.success) throw new Error("Not authenticated");
+      if (!data.success) {
+        throw new Error("Not authenticated");
+      }
 
       return data.user;
     } catch (error: any) {
@@ -63,14 +66,9 @@ export const loginUser = createAsyncThunk<
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
     const { data } = await axios.post("/api/auth/login", credentials);
-    console.log("data", data);
+    console.log("login response data", data);
 
     if (!data.success) throw new Error(data.message || "Login failed");
-
-    // Store token in localStorage
-
-    localStorage.setItem("user", JSON.stringify(data.user));
-
     return data.user; // Assuming the API returns the user object
   } catch (error: any) {
     return rejectWithValue(error.message);

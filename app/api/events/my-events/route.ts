@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   await dbConnect();
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
-  console.log("searchparams", searchParams);
+  // console.log("searchparams", searchParams);
   
 
   if (!userId) {
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
       );
     }
 
-    console.log("my events", user.myEvents);
+    // console.log("my events", user.myEvents);
 
     const response = NextResponse.json(
       {

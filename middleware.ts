@@ -1,57 +1,65 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { jwtVerify } from "jose";
 
-// Your secret key for verifying the token
-// const JWT_SECRET = process.env.JWT_SECRET;
+// Define JWT secret
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+
+// List of public routes (accessible without authentication)
+const PUBLIC_ROUTES = ["/auth/login", "/auth/register", "/"];
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  // console.log("Pathname middleware checking", pathname);
-  
+  console.log("Middleware checking:", pathname);
 
-  // Skip middleware for public paths
-  const publicPaths = ["/auth/login", "/auth/register"];
-
-
-  if (publicPaths.includes(pathname)) {
+  // ✅ Ignore Next.js static files and API calls
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/public")
+  ) {
+    console.log("Skipping static/API/public files:", pathname);
     return NextResponse.next();
   }
 
-  // Get token from headers or cookies
-  const token = await req.cookies.get("authToken");
+  // ✅ Get token from cookies
+  const token = req.cookies.get("authToken");
 
   if (!token?.value) {
-    // Redirect to login if token is missing
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    // 🔹 If user is NOT logged in & tries to access a protected route → Redirect to login
+    if (!PUBLIC_ROUTES.includes(pathname)) {
+      console.log("No token found, redirecting to /auth/login");
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+    // 🔹 If user is NOT logged in but accessing a public route → Allow
+    return NextResponse.next();
   }
 
   try {
-    // Verify token
-    // console.log("got token", token);
-    
-    // const decoded = jwt.verify(token.value, JWT_SECRET);
+    // ✅ Verify token
     const decoded = await jwtVerify(token.value, JWT_SECRET);
-    // console.log("decoded user", decoded);
-    
 
-    // Optionally, pass user data to the next request
-    // req.headers.set("user", JSON.stringify(decoded));           // without jose
-    // req.headers.set("user", JSON.stringify(decoded.payload));   // when using jose
+    // ✅ Check token expiration
+    // if exipred
+    if (decoded.payload.exp && Date.now() >= decoded.payload.exp * 1000) {
+      console.log("Token expired, redirecting to /auth/login");
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+
+    // 🔹 If logged in & trying to access /auth/login or /auth/register → Redirect to Home
+    if (PUBLIC_ROUTES.includes(pathname) && pathname !== "/") {
+      console.log("Already logged in, redirecting to home.");
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   } catch (error) {
     console.error("Invalid Token:", error.message);
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
+  // ✅ Allow access if all checks pass
   return NextResponse.next();
 }
 
-// Specify paths where middleware applies
+// ✅ Middleware runs on all pages except public & static files
 export const config = {
-  matcher: [
-    "/",
-    "/dashboard/:path*", // Protect dashboard and sub-routes
-    "/profile/:path*",   // Protect profile pages
-    "/api/protected/:path*", // Protect specific API routes
-  ],
+  matcher: "/((?!_next/static|_next/image|$).*)",
 };

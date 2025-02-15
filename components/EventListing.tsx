@@ -6,6 +6,7 @@ import EventCard from "./EventCard";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
+import { EVENT_CATEGORIES, EventCategory } from "@/constants";
 interface Event {
   _id: string;
   title: string;
@@ -36,8 +37,6 @@ export default function EventListingComponent({
     search: searchParams.get("search") || "",
   });
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
-
-  
 
   useEffect(() => {
     const queryParams = new URLSearchParams({
@@ -96,9 +95,11 @@ export default function EventListingComponent({
             }
           >
             <option value="">All Categories</option>
-            <option value="Music">Music</option>
-            <option value="Technology">Technology</option>
-            <option value="Business">Business</option>
+            {Object.values(EventCategory).map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
           </select>
 
           <input
@@ -129,8 +130,8 @@ export default function EventListingComponent({
       {loading ? (
         <p className="text-white">Loading events...</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {events.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-6">
+          {events?.length > 0 ? (
             events.map((event) => <EventCard key={event._id} event={event} />)
           ) : (
             <p className="text-white">No events found</p>
